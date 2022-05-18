@@ -6,6 +6,7 @@ import numpy as np
 from path import Path
 import argparse
 from tqdm import tqdm
+import re
 
 from inverse_warp import pose_vec2mat
 from scipy.ndimage.interpolation import zoom
@@ -20,8 +21,8 @@ import cv2
 parser = argparse.ArgumentParser(description='Script for visualizing depth map and masks',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--pretrained-posenet", required=True, type=str, help="pretrained PoseNet path")
-parser.add_argument("--img-height", default=256, type=int, help="Image height")
-parser.add_argument("--img-width", default=832, type=int, help="Image width")
+parser.add_argument("--img-height", default=480, type=int, help="Image height")
+parser.add_argument("--img-width", default=480, type=int, help="Image width")
 parser.add_argument("--no-resize", action='store_true', help="no resizing is done")
 
 parser.add_argument("--dataset-dir", type=str, help="Dataset directory")
@@ -56,8 +57,7 @@ def main():
     output_dir = Path(args.output_dir)
     output_dir.makedirs_p()
 
-    test_files = sum([image_dir.files('*.{}'.format(ext)) for ext in args.img_exts], [])
-    test_files.sort()
+    test_files = sorted(sum([image_dir.files('*.{}'.format(ext)) for ext in args.img_exts], []), key=lambda x:float(re.findall("(\d+)",x)[0]))
 
     print('{} files to test'.format(len(test_files)))
 

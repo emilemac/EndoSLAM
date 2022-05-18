@@ -8,12 +8,13 @@ from tqdm import tqdm
 import models
 from torchvision import transforms
 import time
+import re
 
 parser = argparse.ArgumentParser(description='Script for DispNet testing with corresponding groundTruth',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--pretrained-dispnet", required=True, type=str, help="pretrained DispNet path")
-parser.add_argument("--img-height", default=256, type=int, help="Image height")
-parser.add_argument("--img-width", default=832, type=int, help="Image width")
+parser.add_argument("--img-height", default=480, type=int, help="Image height")
+parser.add_argument("--img-width", default=480, type=int, help="Image width")
 parser.add_argument("--min-depth", default=1e-3)
 parser.add_argument("--max-depth", default=80)
 parser.add_argument("--dataset-dir", default='.', type=str, help="Dataset directory")
@@ -48,7 +49,7 @@ def main():
         with open(args.dataset_list, 'r') as f:
             test_files = list(f.read().splitlines())
     else:
-        test_files=sorted(dataset_dir.files('*.png'))
+        test_files=sorted(dataset_dir.files('*.jpg'), key=lambda x:float(re.findall("(\d+)",x)[0]))
 
     print('{} files to test'.format(len(test_files)))
   
