@@ -4,6 +4,7 @@ from imageio import imread
 from path import Path
 import random
 import os
+import re
 
 
 def load_as_float(path):
@@ -39,8 +40,9 @@ class SequenceFolder(data.Dataset):
         shifts = list(range(-demi_length * self.k, demi_length * self.k + 1, self.k))
         shifts.pop(demi_length)
         for scene in self.scenes:
-            intrinsics = np.genfromtxt(scene/'cam.txt').astype(np.float32).reshape((3, 3))
-            imgs = sorted(scene.files('*.jpg'))
+            #intrinsics = np.genfromtxt(scene/'cam.txt').astype(np.float32).reshape((3, 3))
+            intrinsics = np.array([435.9655,0,217.1750,0,436.0708,239.9629,0,0,1]).reshape((3, 3))
+            imgs = sorted(scene.files('*.jpg'), key=lambda x:float(re.findall("(\d+)",x)[0]))
 
             if len(imgs) < sequence_length:
                 continue
